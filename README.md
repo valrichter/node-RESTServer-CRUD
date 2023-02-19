@@ -1,2 +1,2 @@
 # WebServer + RestServer
-Para reconstruir modulos de Node ```npi install```
+Para reconstruir modulos de Node ```npm install```
