@@ -1,29 +1,52 @@
 const { response, request } = require("express");
+const bcryptjs = require("bcryptjs");
+const Usuario = require("../models/usuario");
 
-const usuariosGet = (req = request, res = response) => {
-  const query = req.query;
+const usuariosGet = async (req = request, res = response) => {
+  const { limit = 5, desde = 0 } = req.query;
+  const query = { state: true };
+
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limit)),
+  ]);
 
   res.json({
-    msg: "Get API - controlador",
-    query,
+    total,
+    usuarios,
   });
 };
 
-const usuariosPost = (req, res = response) => {
-  const { nombre, edad } = req.body;
+const usuariosPost = async (req, res = response) => {
+  const { name, email, password, role } = req.body;
+  const usuario = new Usuario({ name, email, password, role });
 
-  res.json({
-    msg: "Post API - controlador",
-    nombre,
-    edad,
-  });
+  // Encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
+
+  // Guardar en DB
+  await usuario.save();
+
+  res.json(usuario);
 };
 
-const usuariosPut = (req, res = response) => {
+const usuariosPut = async (req, res = response) => {
   const { id } = req.params;
+  const { _id, password, google, email, ...resto } = req.body;
+
+  // TODO: validat contra base d e datos
+  if (password) {
+    // Encriptar la contraseña
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+
+  const usuario = await Usuario.findByIdAndUpdate(id, resto);
+
   res.json({
     msg: "Put API - controlador",
-    id,
+    usuario,
   });
 };
 
@@ -33,9 +56,13 @@ const usuariosPatch = (req, res = response) => {
   });
 };
 
-const usuariosDelete = (req, res = response) => {
+const usuariosDelete = async (req, res = response) => {
+  const { id } = req.params;
+
+  const usuarios = await Usuario.findByIdAndUpdate(id, { state: false });
+
   res.json({
-    msg: "Delete API - controlador",
+    usuarios,
   });
 };
 
