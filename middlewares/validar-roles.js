@@ -15,6 +15,18 @@ const esAdminRole = (req, res = response, next) => {
   }
 };
 
+const tieneRole = (...roles) => {
+  return (req, res = response, next) => {
+    if (!roles.includes(req.usuario.role)) {
+      return res.status(401).json({
+        msg: `El servicio requiere uno de estos roles: ${roles}`,
+      });
+    }
+    next();
+  };
+};
+
 module.exports = {
   esAdminRole,
+  tieneRole,
 };
