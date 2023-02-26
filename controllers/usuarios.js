@@ -35,7 +35,6 @@ const usuariosPut = async (req, res = response) => {
   const { id } = req.params;
   const { _id, password, google, email, ...resto } = req.body;
 
-  // TODO: validat contra base d e datos
   if (password) {
     // Encriptar la contraseña
     const salt = bcryptjs.genSaltSync();
@@ -58,11 +57,12 @@ const usuariosPatch = (req, res = response) => {
 
 const usuariosDelete = async (req, res = response) => {
   const { id } = req.params;
-
   const usuarios = await Usuario.findByIdAndUpdate(id, { state: false });
+  const usuariosAutenticado = req.usuario;
 
   res.json({
     usuarios,
+    usuariosAutenticado,
   });
 };
 
