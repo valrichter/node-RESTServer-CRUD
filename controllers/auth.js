@@ -45,6 +45,13 @@ const login = async (req, res = response) => {
   }
 };
 
+const googleSingin = (req, res = response) => {
+  res.json({
+    msg: "Todo ok GoogleSingin",
+  });
+};
+
 module.exports = {
   login,
+  googleSingin,
 };
