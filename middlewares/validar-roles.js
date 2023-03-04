@@ -13,6 +13,7 @@ const esAdminRole = (req, res = response, next) => {
       msg: `${name} no es administrador - Nop puede hacer esto`,
     });
   }
+  next();
 };
 
 const tieneRole = (...roles) => {
